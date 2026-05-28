@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useMemo, useEffect } from "react";
 import { faker } from "@faker-js/faker";
 
-// FIX 1: reducers fora do componente (evita recriar a cada render)
 const reducerUser2 = (state, action) => {
   switch (action.type) {
     case "inc": return { ...state, idade: state.idade + 1 };
@@ -27,7 +26,6 @@ const reducerTodos = (state, action) => {
   }
 };
 
-// FIX 2: nomes fora do componente (não depende de estado, não precisa recriar)
 const nomes = Array.from({ length: 100 }, () => ({
   nome: faker.person.fullName(),
   cargo: faker.person.jobTitle()
@@ -50,13 +48,11 @@ function App() {
   const [decada, setDecada] = useState("");
   const [ranking, setRanking] = useState([]);
 
-  // FIX 3: useMemo no fatorial
   const fatorial = useMemo(() => {
     const calc = (n) => n <= 1 ? 1 : n * calc(n - 1);
     return num >= 0 ? calc(num) : "inválido"; // FIX 4: guard para negativos
   }, [num]);
 
-  // FIX 5: filtros memoizados
   const filtrados8  = useMemo(() => nomes.filter(n => n.nome.toLowerCase().startsWith(filtro.toLowerCase())), [filtro]);
   const filtrados9  = useMemo(() => nomes.filter(n => n.nome.toLowerCase().includes(filtro.toLowerCase())), [filtro]);
   const filtrados10 = useMemo(() => nomes.filter(n => n.nome.toLowerCase().startsWith(filtro.toLowerCase()) || n.cargo.toLowerCase().startsWith(filtro.toLowerCase())), [filtro]);
@@ -76,7 +72,6 @@ function App() {
     }
   }, [ufSel]);
 
-  // FIX 6: optional chaining para evitar crash se API retornar vazio
   const buscarRanking = () => {
     fetch(`https://servicodados.ibge.gov.br/api/v2/censos/nomes/ranking/?decada=${decada}`)
       .then(r => r.json()).then(d => setRanking(d[0]?.res ?? []));
